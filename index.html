@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP_Calculadora de Parede de Piscina — NBR 6118</title>
+<style>
+  /* ── Reset & Base ── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 14px; }
+  body {
+    background: #020617;
+    color: #E2E8F0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    padding: 24px 14px 40px;
+  }
+  sub { font-size: 0.75em; }
+
+  /* ── Layout ── */
+  .container { max-width: 980px; margin: 0 auto; }
+
+  /* ── Header ── */
+  .header {
+    border-bottom: 2px solid #0EA5E9;
+    padding-bottom: 14px;
+    margin-bottom: 22px;
+  }
+  .header-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 6px; }
+  .tag {
+    border-radius: 5px; padding: 3px 9px;
+    font-size: 11px; font-weight: 800; letter-spacing: .08em;
+  }
+  .tag-blue  { background:#0EA5E9; color:#000; }
+  .tag-green { background:#1e3a1e; color:#86EFAC; }
+  .tag-amber { background:#92400e; color:#FDE68A; }
+  .tag-purple{ background:#1e1e3a; color:#A78BFA; }
+  .header h1 { font-size: 19px; font-weight: 800; color: #F1F5F9; letter-spacing: -0.02em; }
+  .header p  { color: #64748B; font-size: 12.5px; margin-top: 4px; }
+
+  /* ── Main Grid ── */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 305px 1fr;
+    gap: 18px;
+    align-items: start;
+  }
+  @media (max-width: 780px) { .main-grid { grid-template-columns: 1fr; } }
+
+  /* ── Panel ── */
+  .panel {
+    background: #0F172A;
+    border: 1px solid #1E293B;
+    border-radius: 12px;
+    padding: 18px;
+  }
+  .panel-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+    color: #38BDF8; font-weight: 700; margin-bottom: 14px;
+  }
+  .sep {
+    font-size: 10.5px; color: #475569; border-bottom: 1px solid #1e293b;
+    padding-bottom: 6px; margin: 14px 0 10px; font-weight: 700;
+    letter-spacing: .1em; text-transform: uppercase;
+  }
+
+  /* ── Form Fields ── */
+  .field { margin-bottom: 13px; }
+  .field label {
+    display: block; font-size: 12px; color: #94A3B8;
+    letter-spacing: .05em; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;
+  }
+  .field label .unit { color: #38BDF8; margin-left: 4px; text-transform: none; font-size: 11px; font-weight: 400; }
+  .field .hint { font-size: 10px; color: #475569; display: block; margin-bottom: 3px; }
+  input[type=number], select {
+    width: 100%; background: #0A1628; border: 1px solid #334155;
+    border-radius: 6px; padding: 7px 10px; color: #E2E8F0;
+    font-family: 'Courier New', monospace; font-size: 13.5px; outline: none;
+    transition: border-color .2s;
+  }
+  input[type=number]:focus, select:focus { border-color: #38BDF8; }
+  select { cursor: pointer; }
+  select option { background: #0F172A; }
+
+  /* ── Two-col grid ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
+
+  /* ── Toggle Buttons ── */
+  .btn-group { display: flex; gap: 5px; margin-bottom: 10px; }
+  .btn-toggle {
+    flex: 1; padding: 6px 0; border-radius: 5px; cursor: pointer;
+    border: 2px solid #1E293B; background: #0F172A; color: #64748B;
+    font-size: 11px; font-weight: 700; line-height: 1.4;
+    transition: all .18s; text-align: center;
+  }
+  .btn-toggle:hover { border-color: #334155; color: #94A3B8; }
+  .btn-toggle.active-blue  { border-color: #0EA5E9; background: #0c2a3d; color: #38BDF8; }
+  .btn-toggle.active-amber { border-color: #F59E0B; background: #1a0d00; color: #FCD34D; }
+  .btn-toggle.active-purple{ border-color: #A78BFA; background: #1e1e3a; color: #A78BFA; }
+  .btn-toggle .sub-label { font-size: 8px; font-weight: 400; display: block; color: #FCA5A5; }
+
+  /* ── Checkbox row ── */
+  .checkbox-row {
+    display: flex; gap: 10px; align-items: flex-start;
+    background: #1a1000; border-radius: 7px; padding: 9px 11px;
+    border: 1px solid #78350f; margin-bottom: 13px;
+  }
+  .checkbox-row input[type=checkbox] { width: 15px; height: 15px; margin-top: 2px; cursor: pointer; accent-color: #F59E0B; flex-shrink: 0; }
+  .checkbox-row .ck-label { color: #FCD34D; font-size: 11.5px; font-weight: 600; line-height: 1.5; cursor: pointer; }
+  .checkbox-row .ck-label span { color: #92400e; font-size: 10px; font-weight: 400; display: block; }
+
+  /* ── Cover field states ── */
+  input.cob-ok  { border-color: #166534 !important; background: #0c1a0c !important; }
+  input.cob-err { border-color: #991b1b !important; background: #1a0000 !important; }
+  .cob-msg { font-size: 10.5px; color: #FCA5A5; display: block; margin-top: 3px; }
+
+  /* ── Ka buttons ── */
+  .ka-btn-group { display: flex; gap: 5px; margin-bottom: 6px; }
+  .ka-btn {
+    flex: 1; padding: 5px 3px; border-radius: 5px; cursor: pointer;
+    border: 2px solid #1E293B; background: #0F172A; color: #64748B;
+    font-size: 10px; font-weight: 700; line-height: 1.5; text-align: center;
+    transition: all .18s;
+  }
+  .ka-btn.active { border-color: #A78BFA; background: #1e1e3a; color: #A78BFA; }
+
+  /* ── Gamma inputs ── */
+  .gamma-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 13px; }
+  .gamma-item label { display: block; font-size: 12px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 3px; }
+  .gamma-item .unit-hint { font-size: 10px; color: #475569; display: block; margin-bottom: 3px; }
+  .gamma-item input { border-color: transparent; }
+  .gamma-agua input { border-color: #38BDF844 !important; background: #0c1e2e !important; }
+  .gamma-solo input { border-color: #F59E0B44 !important; background: #1a0d00 !important; }
+
+  /* ── Calc Button ── */
+  #btn-calcular {
+    width: 100%; padding: 12px 0; border-radius: 8px; cursor: pointer;
+    background: linear-gradient(135deg, #0EA5E9, #0369A1);
+    border: none; color: #fff; font-size: 14px; font-weight: 800;
+    letter-spacing: .06em; text-transform: uppercase;
+    transition: opacity .2s, transform .1s;
+  }
+  #btn-calcular:hover { opacity: .9; }
+  #btn-calcular:active { transform: scale(.98); }
+
+  /* ── Results ── */
+  #results { display: flex; flex-direction: column; gap: 16px; }
+  .card {
+    background: #0F172A; border: 1px solid #1E293B;
+    border-radius: 12px; padding: 18px;
+  }
+  .card-title {
+    font-size: 12px; text-transform: uppercase; letter-spacing: .1em;
+    font-weight: 700; margin-bottom: 13px;
+  }
+
+  /* ── Valor row ── */
+  .vrow {
+    display: flex; justify-content: space-between; align-items: baseline;
+    padding: 5px 0; border-bottom: 1px solid #1e293b; font-size: 13px;
+  }
+  .vrow .vlabel { color: #94A3B8; }
+  .vrow .vlabel.warn  { color: #FCD34D; }
+  .vrow .vlabel.error { color: #FCA5A5; }
+  .vrow .vval { font-family: 'Courier New', monospace; font-weight: 700; font-size: 14px; color: #E2E8F0; }
+  .vrow .vval.hi   { color: #38BDF8; }
+  .vrow .vval.warn { color: #FCD34D; }
+  .vrow .vval.err  { color: #FCA5A5; }
+  .vrow .vunit { font-size: 10.5px; font-weight: 400; color: #64748B; margin-left: 3px; }
+
+  /* ── Tabela 7.2 ── */
+  .tbl72 { width: 100%; border-collapse: collapse; font-size: 12px; }
+  .tbl72 th, .tbl72 td { padding: 5px 8px; border-bottom: 1px solid #111827; }
+  .tbl72 th { color: #64748B; text-align: center; font-weight: 400; border-bottom-color: #1e293b; }
+  .tbl72 th.act { color: #38BDF8; background: #0c1e2e; font-weight: 800; }
+  .tbl72 td:first-child { text-align: left; color: #94A3B8; }
+  .tbl72 td { text-align: center; font-family: monospace; color: #CBD5E1; }
+  .tbl72 td.act { background: #0c2a3d; color: #38BDF8; font-weight: 800; }
+  .tbl72 td.act-col { background: #0c1e2e; }
+  .tbl72 td.caa4 { color: #FBBF24; }
+  .tbl72 td.row-act { color: #FCD34D; font-weight: 700; }
+  .tbl72-note {
+    margin-top: 6px; padding: 6px 10px; background: #1a1000;
+    border: 1px solid #78350f; border-radius: 6px;
+    font-size: 11px; color: #FCD34D; line-height: 1.6;
+  }
+
+  /* ── Badge ── */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 999px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge-ok  { background: #052e16; color: #86EFAC; border: 1px solid #166534; }
+  .badge-err { background: #450a0a; color: #FCA5A5; border: 1px solid #991b1b; }
+  .badge-inf { background: #1e1e3a; color: #A78BFA; border: 1px solid #4c1d95; }
+
+  /* ── Cobr header ── */
+  .cobr-header {
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 6px; margin-bottom: 12px;
+  }
+  .cobr-title { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: #FCD34D; font-weight: 700; }
+  .cobr-badges { display: flex; gap: 5px; flex-wrap: wrap; }
+
+  /* ── Diagrams ── */
+  .diag-section {
+    display: flex; gap: 18px; align-items: flex-start; flex-wrap: wrap;
+  }
+  .diag-pressures {
+    flex: 1; min-width: 170px;
+    background: #020617; border-radius: 8px; padding: 13px 14px;
+    border: 1px solid #1e293b;
+  }
+  .diag-pressures .dp-title { font-size: 10px; color: #475569; text-transform: uppercase; margin-bottom: 8px; }
+  .pressure-row {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 6px 10px; border-radius: 6px; margin-bottom: 7px;
+  }
+  .pr-agua { background: #38BDF811; border: 1px solid #38BDF833; }
+  .pr-solo { background: #F59E0B11; border: 1px solid #F59E0B33; }
+  .pressure-row span:first-child { font-size: 12px; }
+  .pressure-row .pval { font-family: monospace; font-weight: 700; }
+  .pr-agua span { color: #38BDF8; }
+  .pr-solo span { color: #F59E0B; }
+  .params-box {
+    padding: 7px 10px; background: #1e293b; border-radius: 6px;
+    font-size: 11px; color: #64748B; font-family: monospace; line-height: 1.8;
+  }
+
+  /* ── Caso Cards ── */
+  .caso-grid { display: flex; gap: 12px; flex-wrap: wrap; }
+  .caso-card {
+    flex: 1; min-width: 220px;
+    background: #0F172A; border-radius: 10px; padding: 16px;
+    border: 1px solid #1E293B; transition: border-color .2s;
+  }
+  .caso-card.governa-agua { border: 2px solid #38BDF8; }
+  .caso-card.governa-solo { border: 2px solid #F59E0B; }
+  .caso-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 12px;
+  }
+  .caso-title { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+  .governa-badge {
+    font-size: 10px; font-weight: 800; border-radius: 5px; padding: 1px 7px;
+  }
+  .governa-agua-badge { background: #38BDF822; color: #38BDF8; border: 1px solid #38BDF8; }
+  .governa-solo-badge { background: #F59E0B22; color: #F59E0B; border: 1px solid #F59E0B; }
+  .caso-result {
+    margin-top: 10px; padding: 10px 12px; border-radius: 7px;
+  }
+  .caso-result-label { font-size: 10px; color: #94A3B8; text-transform: uppercase; margin-bottom: 3px; }
+  .caso-result-val { font-family: monospace; font-size: 20px; font-weight: 800; }
+
+  /* ── Final Result ── */
+  .final-card { background: #0F172A; border-radius: 12px; padding: 18px; border: 2px solid #A78BFA; }
+  .final-title { font-size: 12px; text-transform: uppercase; letter-spacing: .1em; color: #A78BFA; font-weight: 700; margin-bottom: 6px; }
+  .final-sub { font-size: 12px; color: #64748B; margin-bottom: 14px; }
+  .final-sub strong { }
+  .final-compare { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 14px; }
+  .fc-item { padding: 12px 14px; border-radius: 8px; }
+  .fc-item-label { font-size: 10px; color: #94A3B8; text-transform: uppercase; margin-bottom: 4px; }
+  .fc-item-val { font-family: monospace; font-size: 18px; font-weight: 800; }
+  .fc-agua { background: #38BDF811; border: 1px solid #38BDF833; }
+  .fc-agua .fc-item-val { color: #38BDF8; }
+  .fc-solo { background: #F59E0B11; border: 1px solid #F59E0B33; }
+  .fc-solo .fc-item-val { color: #F59E0B; }
+  .final-box {
+    padding: 16px 20px;
+    background: linear-gradient(135deg, #1e1e3a, #0c0c1e);
+    border-radius: 10px; border: 2px solid #A78BFA;
+  }
+  .final-box-label { font-size: 11px; color: #94A3B8; text-transform: uppercase; margin-bottom: 6px; }
+  .final-box-val { font-family: monospace; font-size: 28px; font-weight: 800; color: #A78BFA; }
+  .final-box-info { font-size: 12px; color: #64748B; margin-top: 6px; }
+
+  /* ── Notes ── */
+  .notes {
+    background: #0c1a0c; border-radius: 10px; padding: 13px 16px;
+    border: 1px solid #166534; font-size: 12px; color: #86EFAC; line-height: 1.8;
+  }
+  .notes ul { margin: 6px 0 0; padding-left: 18px; }
+
+  /* ── Error ── */
+  .error-box {
+    background: #450a0a; border: 1px solid #991b1b;
+    border-radius: 10px; padding: 14px; color: #FCA5A5; font-weight: 600;
+    display: none;
+  }
+
+  /* ── Formulas box ── */
+  .formulas {
+    background: #020617; border-radius: 8px; padding: 12px 14px;
+    border: 1px solid #1e293b; flex: 1; min-width: 160px;
+  }
+  .formulas-title { font-size: 10px; color: #475569; text-transform: uppercase; margin-bottom: 8px; }
+  .formulas code { font-family: 'Courier New', monospace; font-size: 12px; color: #CBD5E1; display: block; line-height: 2; }
+
+  /* ── Mini Diagram labels ── */
+  .mini-diag-label {
+    font-size: 10px; color: #64748B; text-transform: uppercase;
+    letter-spacing: .06em; margin-bottom: 4px;
+  }
+  .mini-diag-col { display: flex; flex-direction: column; gap: 10px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-tags">
+      <span class="tag tag-blue">NBR 6118</span>
+      <span class="tag tag-green">Tab. 7.2</span>
+      <span class="tag tag-amber">CAA IV</span>
+      <span class="tag tag-purple">Piscina Cheia + Vazia</span>
+      <h1>APavan_Calculadora de Parede de Piscina</h1>
+    </div>
+    <p>Dimensionamento à flexão simples · Envoltória: Piscina Cheia (água) vs. Vazia (solo) · NBR 6118</p>
+  </div>
+
+  <!-- MAIN GRID -->
+  <div class="main-grid">
+
+    <!-- ── PAINEL DE ENTRADAS ─────────────────────────────────────── -->
+    <div class="panel">
+      <div class="panel-title">⚙ Parâmetros de Entrada</div>
+
+      <!-- GEOMETRIA -->
+      <div class="sep">Geometria</div>
+      <div class="field">
+        <label>Altura da Parede · h <span class="unit">[m]</span></label>
+        <input type="number" id="h" value="1.5" step="0.05" min="0.3" max="5">
+      </div>
+      <div class="field">
+        <label>Espessura da Parede · e <span class="unit">[cm]</span></label>
+        <input type="number" id="e_cm" value="20" step="1" min="10" max="80">
+      </div>
+
+      <!-- PESOS ESPECÍFICOS -->
+      <div class="sep">Pesos Específicos</div>
+      <div class="gamma-grid">
+        <div class="gamma-item gamma-agua">
+          <label style="color:#38BDF8;">γ<sub>a</sub> — Água</label>
+          <span class="unit-hint">kN/m³</span>
+          <input type="number" id="gamma_a" value="10" step="0.5" min="9" max="11">
+        </div>
+        <div class="gamma-item gamma-solo">
+          <label style="color:#F59E0B;">γ<sub>s</sub> — Solo</label>
+          <span class="unit-hint">kN/m³</span>
+          <input type="number" id="gamma_s" value="18" step="0.5" min="14" max="22">
+        </div>
+      </div>
+
+      <!-- COEFICIENTE Ka -->
+      <div class="field">
+        <label style="color:#A78BFA;">Ka — Coef. Empuxo Ativo</label>
+        <div class="ka-btn-group">
+          <button class="ka-btn active" data-ka="0.33">Ka=0,33<br><span style="color:#8B8BA0;font-size:9px;">φ=30°</span></button>
+          <button class="ka-btn" data-ka="0.27">Ka=0,27<br><span style="color:#8B8BA0;font-size:9px;">φ=35°</span></button>
+          <button class="ka-btn" data-ka="0.22">Ka=0,22<br><span style="color:#8B8BA0;font-size:9px;">φ=40°</span></button>
+        </div>
+        <input type="number" id="Ka" value="0.33" step="0.01" min="0.10" max="0.50"
+          style="border-color:#A78BFA44;background:#1e1e3a;">
+        <span class="hint" style="margin-top:3px;">Ka = (1−sen φ)/(1+sen φ) — Rankine</span>
+      </div>
+
+      <!-- COBRIMENTOS -->
+      <div class="sep">Cobrimentos — NBR 6118 Tab. 7.2</div>
+      <div class="field">
+        <label>Classe de Agressividade (CAA)</label>
+        <div class="btn-group" id="caa-btns">
+          <button class="btn-toggle active-amber" data-caa="I">I</button>
+          <button class="btn-toggle" data-caa="II">II</button>
+          <button class="btn-toggle" data-caa="III">III</button>
+          <button class="btn-toggle active-amber" data-caa="IV" id="caa-iv-btn">IV<span class="sub-label">Piscina</span></button>
+        </div>
+      </div>
+      <div class="field">
+        <label>Tipo de Elemento</label>
+        <div class="btn-group" id="elem-btns">
+          <button class="btn-toggle active-blue" data-elem="laje">Laje/Parede</button>
+          <button class="btn-toggle" data-elem="viga">Viga/Pilar</button>
+        </div>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="redutor">
+        <label class="ck-label" for="redutor">
+          Redutor de 0,5 cm
+          <span>Controle rigoroso de execução — Item c CAA IV</span>
+        </label>
+      </div>
+      <div class="field">
+        <label id="cover-label">
+          Cobrimento Nominal · c
+          <span class="unit" id="cob-min-label" style="color:#FCD34D;">[mín. 4,5 cm]</span>
+        </label>
+        <input type="number" id="cover_cm" value="4.5" step="0.5" min="1.5" max="9" class="cob-ok">
+        <span class="cob-msg" id="cob-msg" style="display:none;"></span>
+      </div>
+
+      <!-- BARRA -->
+      <div class="field">
+        <label>Diâmetro da Armadura · φ</label>
+        <select id="phi_mm">
+          <option value="6.3">φ 6,3 mm</option>
+          <option value="8">φ 8 mm</option>
+          <option value="10">φ 10 mm</option>
+          <option value="12.5" selected>φ 12,5 mm</option>
+          <option value="16">φ 16 mm</option>
+          <option value="20">φ 20 mm</option>
+          <option value="25">φ 25 mm</option>
+        </select>
+      </div>
+
+      <!-- MATERIAIS -->
+      <div class="sep">Materiais</div>
+      <div class="field">
+        <label>Resistência do Concreto · fck</label>
+        <select id="fck">
+          <option value="20">C20 — fck = 20 MPa</option>
+          <option value="25" selected>C25 — fck = 25 MPa</option>
+          <option value="30">C30 — fck = 30 MPa</option>
+          <option value="35">C35 — fck = 35 MPa</option>
+          <option value="40">C40 — fck = 40 MPa</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Aço · fyk</label>
+        <select id="fyk">
+          <option value="250">CA-25 · fyk = 250 MPa</option>
+          <option value="500" selected>CA-50 · fyk = 500 MPa</option>
+          <option value="600">CA-60 · fyk = 600 MPa</option>
+        </select>
+      </div>
+
+      <!-- TIPO -->
+      <div class="sep">Tipo de Piscina</div>
+      <div class="btn-group" id="tipo-btns" style="margin-bottom:18px;">
+        <button class="btn-toggle active-blue" data-tipo="elevada">Elevada</button>
+        <button class="btn-toggle" data-tipo="apoiada">Apoiada</button>
+      </div>
+
+      <button id="btn-calcular">▶ Calcular</button>
+    </div>
+
+    <!-- ── RESULTADOS ──────────────────────────────────────────────── -->
+    <div id="results">
+      <div class="error-box" id="error-box">⚠ <span id="error-msg"></span></div>
+
+      <!-- Placeholder antes de calcular -->
+      <div id="placeholder" class="card" style="text-align:center;padding:40px 20px;">
+        <div style="font-size:40px;margin-bottom:12px;">🏊</div>
+        <div style="color:#38BDF8;font-size:14px;font-weight:700;margin-bottom:6px;">
+          Calculadora de Parede de Piscina
+        </div>
+        <div style="color:#475569;font-size:12px;line-height:1.7;">
+          Preencha os parâmetros ao lado e clique em <strong style="color:#E2E8F0;">▶ Calcular</strong><br>
+          para dimensionar a armadura conforme NBR 6118.
+        </div>
+      </div>
+
+      <!-- Blocos de resultado (ocultos até calcular) -->
+      <div id="result-content" style="display:none;display:flex;flex-direction:column;gap:16px;">
+
+        <!-- Tabela 7.2 -->
+        <div class="card" id="card-cobr" style="border:2px solid #166534;">
+          <div class="cobr-header">
+            <div class="cobr-title">🛡 Cobrimentos — NBR 6118 Tab. 7.2</div>
+            <div class="cobr-badges" id="cobr-badges"></div>
+          </div>
+          <div id="tabela72-container"></div>
+        </div>
+
+        <!-- Diagramas -->
+        <div class="card">
+          <div class="card-title" style="color:#A78BFA;">📊 Diagrama de Pressões — Cheia vs. Vazia</div>
+          <div class="diag-section">
+            <div>
+              <div style="font-size:10px;color:#64748B;text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;">
+                Pressões simultâneas (referência)
+              </div>
+              <svg id="svg-duplo" width="320" height="170" style="overflow:visible;display:block;"></svg>
+            </div>
+            <div class="mini-diag-col">
+              <div>
+                <div class="mini-diag-label">🔵 Cheia — Empuxo Água</div>
+                <svg id="svg-agua" width="130" height="110" style="overflow:visible;display:block;"></svg>
+              </div>
+              <div>
+                <div class="mini-diag-label">🟡 Vazia — Empuxo Solo</div>
+                <svg id="svg-solo" width="130" height="110" style="overflow:visible;display:block;"></svg>
+              </div>
+            </div>
+            <div class="diag-pressures">
+              <div class="dp-title">Pressões na Base</div>
+              <div class="pressure-row pr-agua">
+                <span>Ph água (base)</span>
+                <span class="pval" id="ph-agua-val">—</span>
+              </div>
+              <div class="pressure-row pr-solo">
+                <span>Ph solo (base)</span>
+                <span class="pval" id="ph-solo-val">—</span>
+              </div>
+              <div class="params-box" id="params-box"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Envoltória -->
+        <div>
+          <div class="card-title" style="margin-bottom:10px;color:#E2E8F0;">
+            ⚖ Envoltória — Dimensionamento por Caso
+          </div>
+          <div class="caso-grid">
+            <div class="caso-card" id="caso-agua">
+              <div class="caso-header">
+                <div class="caso-title" style="color:#38BDF8;">🔵 Cheia — Empuxo Água</div>
+                <span class="governa-badge governa-agua-badge" id="governa-agua" style="display:none;">GOVERNA</span>
+              </div>
+              <div id="rows-agua"></div>
+              <div class="caso-result" style="background:#38BDF811;border:1px solid #38BDF833;">
+                <div class="caso-result-label">As a adotar</div>
+                <div class="caso-result-val" style="color:#38BDF8;" id="as-agua-val">—</div>
+              </div>
+            </div>
+            <div class="caso-card" id="caso-solo">
+              <div class="caso-header">
+                <div class="caso-title" style="color:#F59E0B;">🟡 Vazia — Empuxo Solo</div>
+                <span class="governa-badge governa-solo-badge" id="governa-solo" style="display:none;">GOVERNA</span>
+              </div>
+              <div id="rows-solo"></div>
+              <div class="caso-result" style="background:#F59E0B11;border:1px solid #F59E0B33;">
+                <div class="caso-result-label">As a adotar</div>
+                <div class="caso-result-val" style="color:#F59E0B;" id="as-solo-val">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Resultado Final -->
+        <div class="final-card">
+          <div class="final-title">🏆 Armadura Final — Envoltória</div>
+          <div class="final-sub" id="final-sub">—</div>
+          <div class="final-compare">
+            <div class="fc-item fc-agua">
+              <div class="fc-item-label">🔵 As (cheia)</div>
+              <div class="fc-item-val" id="fc-agua">—</div>
+            </div>
+            <div class="fc-item fc-solo">
+              <div class="fc-item-label">🟡 As (vazia)</div>
+              <div class="fc-item-val" id="fc-solo">—</div>
+            </div>
+          </div>
+          <div class="final-box">
+            <div class="final-box-label">✅ Armadura a Adotar — Face Interna</div>
+            <div class="final-box-val" id="as-final">—</div>
+            <div class="final-box-info" id="as-final-info">—</div>
+          </div>
+        </div>
+
+        <!-- Fórmulas -->
+        <div class="card">
+          <div class="card-title" style="color:#38BDF8;">📐 Fórmulas Aplicadas — NBR 6118</div>
+          <div style="display:flex;gap:20px;flex-wrap:wrap;">
+            <div class="formulas" style="flex:1;min-width:220px;">
+              <div class="formulas-title">Esforços</div>
+              <code>M<sub>eng</sub> = γ<sub>a(s)</sub> · h³ / 6</code>
+              <code>M<sub>d</sub> = γ<sub>f</sub> · M<sub>eng</sub>  (γ<sub>f</sub> = 1,4)</code>
+              <code>P<sub>h</sub> = γ · h  [pressão base]</code>
+              <code>M<sub>eng,solo</sub> = Ka · γ<sub>s</sub> · h³ / 6</code>
+            </div>
+            <div class="formulas" style="flex:1;min-width:220px;">
+              <div class="formulas-title">Armadura (Domínio 2)</div>
+              <code>LN = 1,25d·(1−√(1−2M<sub>d</sub>/(0,85·f<sub>cd</sub>·d²)))</code>
+              <code>A<sub>s</sub> = M<sub>d</sub> / (f<sub>yd</sub>·(d−0,4·LN))</code>
+              <code>A<sub>s,min</sub> = ρ<sub>min</sub> · b · d</code>
+            </div>
+          </div>
+        </div>
+
+        <!-- Notas -->
+        <div class="notes">
+          <strong>📋 Notas de projeto:</strong>
+          <ul>
+            <li>A armadura calculada é posicionada na <strong>face interna</strong> da parede (tração em ambos os casos).</li>
+            <li>Lajes de fundo e tampa: M = M<sub>eng</sub> (laje apoiada ou engastada conforme projeto).</li>
+            <li>ELS — Fissuração: w<sub>k</sub> ≤ 0,2 mm para CAA IV (piscinas) — NBR 6118 Tab. 13.2.</li>
+            <li>Armadura transversal de distribuição: ≥ 20% da armadura principal.</li>
+            <li>Ka (Rankine): verificar φ do solo com o projeto de fundações / sondagem SPT.</li>
+            <li>Prática de mercado: fck ≥ 30 MPa para piscinas (CAA IV).</li>
+          </ul>
+        </div>
+
+      </div><!-- /result-content -->
+    </div><!-- /results -->
+  </div><!-- /main-grid -->
+</div><!-- /container -->
+
+<script>
+// ────────────────────────────────────────────────────────────────────
+//  CONSTANTES NBR 6118
+// ────────────────────────────────────────────────────────────────────
+const GAMMA_F = 1.4;
+const GAMMA_C = 1.4;
+const GAMMA_S_ACO = 1.15;
+
+const TABELA_72 = {
+  I:   { laje: 20, viga: 25 },
+  II:  { laje: 25, viga: 30 },
+  III: { laje: 35, viga: 40 },
+  IV:  { laje: 45, viga: 50 }
+};
+
+// ── Estado da UI ──────────────────────────────────────────────────
+const state = { caa: 'IV', tipoElem: 'laje', tipo: 'elevada' };
+
+// ── Helpers ───────────────────────────────────────────────────────
+function getCobMin(caa, elem, red) {
+  return TABELA_72[caa][elem] - (red ? 5 : 0);
+}
+
+function fmt(v, d) { return parseFloat(v).toFixed(d); }
+
+function makeRow(label, val, unit, cls) {
+  return `<div class="vrow">
+    <span class="vlabel ${cls||''}">${label}</span>
+    <span class="vval ${cls||''}">${val}<span class="vunit">${unit||''}</span></span>
+  </div>`;
+}
+
+// ── SVG helpers ───────────────────────────────────────────────────
+function svgEl(tag, attrs) {
+  const el = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+  return el;
+}
+
+function svgText(svg, x, y, txt, fill, size, bold) {
+  const t = svgEl('text', { x, y, fill, 'font-size': size||8, 'font-family':'monospace' });
+  if (bold) t.setAttribute('font-weight','bold');
+  t.textContent = txt;
+  svg.appendChild(t);
+}
+
+function addMarker(defs, id, color, leftPoint) {
+  const m = svgEl('marker', { id, markerWidth:6, markerHeight:6,
+    refX: leftPoint?0:6, refY:3, orient:'auto' });
+  const path = svgEl('path', { d: leftPoint?'M0,0 L6,3 L0,6 Z':'M6,0 L0,3 L6,6 Z', fill: color });
+  m.appendChild(path); defs.appendChild(m);
+}
+
+// ── Diagrama combinado ────────────────────────────────────────────
+function drawDuplo(res) {
+  const svg = document.getElementById('svg-duplo');
+  svg.innerHTML = '';
+  const W=320, H=170, pad=14, wallH=H-2*pad;
+  const wallX=W/2, top=pad, bot=H-pad;
+  const scaleAgua=55, scaleSolo=45;
+
+  const defs = svgEl('defs',{});
+  addMarker(defs, 'arrA', '#38BDF8', true);   // seta aponta para esquerda (→ parede)
+  addMarker(defs, 'arrS', '#F59E0B', false);  // seta aponta para direita (→ parede)
+  svg.appendChild(defs);
+
+  // Parede
+  svg.appendChild(svgEl('rect',{ x:wallX, y:top, width:10, height:wallH, fill:'#4B5563' }));
+
+  // Solo (esquerda)
+  const ptsSolo = `${wallX},${top} ${wallX-scaleSolo},${bot} ${wallX},${bot}`;
+  svg.appendChild(svgEl('polygon',{ points:ptsSolo, fill:'#F59E0B', 'fill-opacity':'.15', stroke:'#F59E0B', 'stroke-width':1 }));
+  [.33,.66,1].forEach(t => {
+    const y = top + t*wallH, x = wallX - scaleSolo*t;
+    const l = svgEl('line',{ x1:x, y1:y, x2:wallX, y2:y, stroke:'#F59E0B', 'stroke-width':1.5, 'marker-end':'url(#arrS)' });
+    svg.appendChild(l);
+  });
+  svgText(svg, wallX-scaleSolo-38, bot+4, res.Ph_solo.toFixed(1)+' kN/m²', '#F59E0B', 8);
+  svgText(svg, wallX-scaleSolo-20, top+10, 'Solo', '#F59E0B', 9, true);
+
+  // Água (direita)
+  const ptsAgua = `${wallX+10},${top} ${wallX+10+scaleAgua},${bot} ${wallX+10},${bot}`;
+  svg.appendChild(svgEl('polygon',{ points:ptsAgua, fill:'#38BDF8', 'fill-opacity':'.15', stroke:'#38BDF8', 'stroke-width':1 }));
+  [.33,.66,1].forEach(t => {
+    const y = top + t*wallH, x = wallX+10+scaleAgua*t;
+    const l = svgEl('line',{ x1:x, y1:y, x2:wallX+10, y2:y, stroke:'#38BDF8', 'stroke-width':1.5, 'marker-end':'url(#arrA)' });
+    svg.appendChild(l);
+  });
+  svgText(svg, wallX+10+scaleAgua+4, bot+4, res.Ph_agua.toFixed(1)+' kN/m²', '#38BDF8', 8);
+  svgText(svg, wallX+10+scaleAgua+4, top+10, 'Água', '#38BDF8', 9, true);
+
+  // Reação solo base (apoiada)
+  if (res.tipo === 'apoiada') {
+    [0,.2,.4,.6,.8,1].forEach(t => {
+      svg.appendChild(svgEl('line',{ x1:wallX-40+80*t, y1:bot+2, x2:wallX-50+80*t, y2:bot+12, stroke:'#A78BFA', 'stroke-width':1.5 }));
+    });
+    svg.appendChild(svgEl('line',{ x1:wallX-45, y1:bot+2, x2:wallX+45, y2:bot+2, stroke:'#A78BFA', 'stroke-width':2 }));
+    svgText(svg, wallX+48, bot+9, 'Reação', '#A78BFA', 8);
+  }
+  svgText(svg, wallX+2, (top+bot)/2, 'h='+res.h+'m', '#94A3B8', 8);
+}
+
+// ── Mini diagrama ─────────────────────────────────────────────────
+function drawMini(svgId, color, Ph, h, dir) {
+  const svg = document.getElementById(svgId);
+  svg.innerHTML = '';
+  const W=130, H=110, pad=10, wallH=H-2*pad;
+  const wallX = dir==='agua' ? W/2-5 : W/2;
+  const top=pad, bot=H-pad, scale=40;
+  const mid = `url(#arrm_${dir})`;
+
+  const defs = svgEl('defs',{});
+  addMarker(defs, `arrm_${dir}`, color, dir==='agua');
+  svg.appendChild(defs);
+
+  svg.appendChild(svgEl('rect',{ x:wallX, y:top, width:8, height:wallH, fill:'#374151' }));
+
+  let pts;
+  if (dir==='agua') pts = `${wallX+8},${top} ${wallX+8+scale},${bot} ${wallX+8},${bot}`;
+  else              pts = `${wallX},${top} ${wallX-scale},${bot} ${wallX},${bot}`;
+  svg.appendChild(svgEl('polygon',{ points:pts, fill:color, 'fill-opacity':'.15', stroke:color, 'stroke-width':1 }));
+
+  [.4,.7,1].forEach(t => {
+    const y = top+t*wallH;
+    let x1, x2;
+    if (dir==='agua') { x1 = wallX+8+scale*t; x2 = wallX+8; }
+    else              { x1 = wallX-scale*t;    x2 = wallX; }
+    svg.appendChild(svgEl('line',{ x1,y1:y,x2,y2:y, stroke:color, 'stroke-width':1.2, 'marker-end':mid }));
+  });
+
+  svgText(svg, dir==='agua'?wallX+8+scale+2:2, bot+3, Ph.toFixed(1)+' kN/m²', color, 7);
+  svgText(svg, wallX+1, (top+bot)/2, h+'m', '#6B7280', 7);
+  svgText(svg, W/2-12, 9, dir==='agua'?'Água':'Solo', color, 8, true);
+}
+
+// ── Tabela 7.2 ────────────────────────────────────────────────────
+function renderTabela72(caa, tipoElem) {
+  const caas = ['I','II','III','IV'];
+  const elems = [{ k:'laje', l:'Laje/Parede' },{ k:'viga', l:'Viga/Pilar' }];
+  let html = `<table class="tbl72"><thead><tr><th style="text-align:left;">Elemento</th>`;
+  caas.forEach(c => {
+    html += `<th class="${c===caa?'act':''}">${c==='I'?'CAA I':c==='II'?'CAA II':c==='III'?'CAA III':'CAA IV'}</th>`;
+  });
+  html += `</tr></thead><tbody>`;
+  elems.forEach(el => {
+    const rowAct = el.k === tipoElem;
+    html += `<tr><td class="${rowAct?'row-act':''}">${el.l}</td>`;
+    caas.forEach(c => {
+      const val = TABELA_72[c][el.k];
+      const ativo = c===caa && el.k===tipoElem;
+      let cls = '';
+      if (ativo) cls = 'act';
+      else if (c===caa) cls = 'act-col';
+      else if (c==='IV') cls = 'caa4';
+      html += `<td class="${cls}">${val} mm${ativo?' ◀':''}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</tbody></table>
+  <div class="tbl72-note">
+    <strong>⚠ CAA IV — Piscinas:</strong> cobrimento mínimo ≥ 45 mm (laje/parede) e ≥ 50 mm (viga/pilar).
+    Redutor de 0,5 cm somente com controle rigoroso (Item c).
+  </div>`;
+  document.getElementById('tabela72-container').innerHTML = html;
+}
+
+// ── Linhas de resultado ───────────────────────────────────────────
+function renderRows(containerId, rows) {
+  document.getElementById(containerId).innerHTML = rows.map(r => makeRow(r.l, r.v, r.u, r.c||'')).join('');
+}
+
+// ── Cálculo principal ─────────────────────────────────────────────
+function calcArmadura(Md, d, fcd, fyd) {
+  const disc = 1 - (2*Md) / (0.85*fcd*d*d);
+  if (disc < 0) return null;
+  const LN = 1.25*d*(1-Math.sqrt(disc));
+  const As  = Md / (fyd*(d - 0.4*LN));
+  return { LN_cm: LN*100, As_cm2: As*10000, x_ratio: LN/d };
+}
+
+function calcular() {
+  const h        = parseFloat(document.getElementById('h').value);
+  const e_cm     = parseFloat(document.getElementById('e_cm').value);
+  const cover_cm = parseFloat(document.getElementById('cover_cm').value);
+  const phi_mm   = parseFloat(document.getElementById('phi_mm').value);
+  const fck      = parseFloat(document.getElementById('fck').value);
+  const fyk      = parseFloat(document.getElementById('fyk').value);
+  const gamma_a  = parseFloat(document.getElementById('gamma_a').value);
+  const gamma_s  = parseFloat(document.getElementById('gamma_s').value);
+  const Ka       = parseFloat(document.getElementById('Ka').value);
+  const red      = document.getElementById('redutor').checked;
+  const { caa, tipoElem, tipo } = state;
+
+  // ── Validações básicas ────────────────────────────────────────
+  if (isNaN(h)||isNaN(e_cm)||isNaN(cover_cm)||isNaN(phi_mm)||isNaN(fck)||isNaN(fyk)||isNaN(gamma_a)||isNaN(gamma_s)||isNaN(Ka)) {
+    showError('Preencha todos os campos corretamente.'); return;
+  }
+
+  const e = e_cm/100, cover = cover_cm/100, phi = phi_mm/1000;
+  const d = e - cover - phi/2;
+  if (d <= 0) { showError('Espessura insuficiente para o cobrimento + φ.'); return; }
+
+  // Cobrimento
+  const cob_min_mm = getCobMin(caa, tipoElem, red);
+  const cob_user_mm = cover_cm * 10;
+  const cobOk = cob_user_mm >= cob_min_mm;
+
+  // Materiais
+  const fcd_MPa = fck/GAMMA_C, fyd_MPa = fyk/GAMMA_S_ACO;
+  const fcd = fcd_MPa*1000, fyd = fyd_MPa*1000;
+  const rho_min    = fyk <= 250 ? 0.0025 : 0.0015;
+  const As_min_cm2 = rho_min*100*(d*100);
+  const x_lim      = fyk <= 250 ? 0.718 : 0.628;
+
+  // CASO 1 — Cheia (água)
+  const M_eng_agua = gamma_a * Math.pow(h,3) / 6;
+  const Md_agua    = GAMMA_F * M_eng_agua;
+  const r1 = calcArmadura(Md_agua, d, fcd, fyd);
+  if (!r1) { showError('Seção insuficiente (água)! Aumente a espessura ou o fck.'); return; }
+  const As_agua   = Math.max(r1.As_cm2, As_min_cm2);
+  const domOkAgua = r1.x_ratio <= x_lim;
+
+  // CASO 2 — Vazia (solo)
+  const M_eng_solo = Ka * gamma_s * Math.pow(h,3) / 6;
+  const Md_solo    = GAMMA_F * M_eng_solo;
+  const r2 = calcArmadura(Md_solo, d, fcd, fyd);
+  if (!r2) { showError('Seção insuficiente (solo)! Aumente a espessura ou o fck.'); return; }
+  const As_solo   = Math.max(r2.As_cm2, As_min_cm2);
+  const domOkSolo = r2.x_ratio <= x_lim;
+
+  // Envoltória
+  const governa  = As_agua >= As_solo ? 'água' : 'solo';
+  const As_final = Math.max(As_agua, As_solo);
+  const Ph_agua  = gamma_a * h;
+  const Ph_solo  = Ka * gamma_s * h;
+
+  const res = { h, e_cm, cover_cm, phi_mm, fck, fyk, d_cm: d*100,
+    gamma_a, gamma_s, Ka, tipo, caa, tipoElem, red,
+    cob_min_mm, cob_user_mm, cobOk,
+    fcd_MPa, fyd_MPa, As_min_cm2, x_lim,
+    Ph_agua, Ph_solo,
+    M_eng_agua, Md_agua, LN_agua: r1.LN_cm, x_agua: r1.x_ratio, As_calc_agua: r1.As_cm2, As_agua, domOkAgua,
+    M_eng_solo, Md_solo, LN_solo: r2.LN_cm, x_solo: r2.x_ratio, As_calc_solo: r2.As_cm2, As_solo, domOkSolo,
+    governa, As_final
+  };
+
+  hideError();
+  renderResults(res);
+}
+
+// ── Renderização dos resultados ───────────────────────────────────
+function renderResults(r) {
+  document.getElementById('placeholder').style.display = 'none';
+  const rc = document.getElementById('result-content');
+  rc.style.display = 'flex';
+  rc.style.flexDirection = 'column';
+  rc.style.gap = '16px';
+
+  // Card cobrimento — borda
+  const cardCobr = document.getElementById('card-cobr');
+  cardCobr.style.border = r.cobOk ? '2px solid #166534' : '2px solid #991b1b';
+
+  // Badges cobrimento
+  const cobText = r.cobOk
+    ? `c=${r.cob_user_mm}mm ≥ ${r.cob_min_mm}mm ✓`
+    : `c=${r.cob_user_mm}mm < ${r.cob_min_mm}mm INSUFICIENTE`;
+  let badgesHtml = `<span class="badge badge-ok">✓ CAA ${r.caa}</span>
+    <span class="badge ${r.cobOk?'badge-ok':'badge-err'}">${r.cobOk?'✓':'✗'} ${cobText}</span>`;
+  if (r.red) badgesHtml += `<span class="badge badge-inf">Redutor 0,5cm</span>`;
+  document.getElementById('cobr-badges').innerHTML = badgesHtml;
+
+  // Tabela 7.2
+  renderTabela72(r.caa, r.tipoElem);
+
+  // Diagramas SVG
+  drawDuplo(r);
+  drawMini('svg-agua', '#38BDF8', r.Ph_agua, r.h, 'agua');
+  drawMini('svg-solo', '#F59E0B', r.Ph_solo, r.h, 'solo');
+
+  // Pressures
+  document.getElementById('ph-agua-val').textContent = fmt(r.Ph_agua,2) + ' kN/m²';
+  document.getElementById('ph-solo-val').textContent = fmt(r.Ph_solo,2) + ' kN/m²';
+  document.getElementById('params-box').innerHTML =
+    `γ<sub>a</sub> = ${r.gamma_a} kN/m³<br>γ<sub>s</sub> = ${r.gamma_s} kN/m³<br>Ka = ${r.Ka}`;
+
+  // Caso Água
+  document.getElementById('caso-agua').className = 'caso-card' + (r.governa==='água'?' governa-agua':'');
+  document.getElementById('governa-agua').style.display = r.governa==='água'?'inline-block':'none';
+  renderRows('rows-agua', [
+    { l:'M<sub>eng</sub>',    v:fmt(r.M_eng_agua,3),   u:'kN·m/m' },
+    { l:'M<sub>d</sub> (γ<sub>f</sub>=1,4)', v:fmt(r.Md_agua,3), u:'kN·m/m', c:'hi' },
+    { l:'LN',                v:fmt(r.LN_agua,3),      u:'cm' },
+    { l:'x/d',               v:fmt(r.x_agua,4),       u:'', c: r.domOkAgua?'':'err' },
+    { l:'Domínio',           v: r.domOkAgua?'Dom. 2 ✓':'⚠ Dom. 3', u:'', c: r.domOkAgua?'hi':'err' },
+    { l:'A<sub>s</sub> calc',v:fmt(r.As_calc_agua,3), u:'cm²/m' },
+    { l:'A<sub>s,min</sub>', v:fmt(r.As_min_cm2,3),   u:'cm²/m' },
+  ]);
+  document.getElementById('as-agua-val').textContent = fmt(r.As_agua,2) + ' cm²/m';
+
+  // Caso Solo
+  document.getElementById('caso-solo').className = 'caso-card' + (r.governa==='solo'?' governa-solo':'');
+  document.getElementById('governa-solo').style.display = r.governa==='solo'?'inline-block':'none';
+  renderRows('rows-solo', [
+    { l:'M<sub>eng</sub>',    v:fmt(r.M_eng_solo,3),   u:'kN·m/m' },
+    { l:'M<sub>d</sub> (γ<sub>f</sub>=1,4)', v:fmt(r.Md_solo,3), u:'kN·m/m', c:'hi' },
+    { l:'LN',                v:fmt(r.LN_solo,3),      u:'cm' },
+    { l:'x/d',               v:fmt(r.x_solo,4),       u:'', c: r.domOkSolo?'':'err' },
+    { l:'Domínio',           v: r.domOkSolo?'Dom. 2 ✓':'⚠ Dom. 3', u:'', c: r.domOkSolo?'hi':'err' },
+    { l:'A<sub>s</sub> calc',v:fmt(r.As_calc_solo,3), u:'cm²/m' },
+    { l:'A<sub>s,min</sub>', v:fmt(r.As_min_cm2,3),   u:'cm²/m' },
+  ]);
+  document.getElementById('as-solo-val').textContent = fmt(r.As_solo,2) + ' cm²/m';
+
+  // Final
+  const govNome = r.governa==='água' ? 'Piscina Cheia (Água)' : 'Piscina Vazia (Solo)';
+  const govColor = r.governa==='água' ? '#38BDF8' : '#F59E0B';
+  document.getElementById('final-sub').innerHTML =
+    `Governa: caso <strong style="color:${govColor}">${govNome}</strong>
+     — armadura posicionada na <strong style="color:#A78BFA">face interna da parede</strong>`;
+  document.getElementById('fc-agua').textContent = fmt(r.As_agua,2) + ' cm²/m';
+  document.getElementById('fc-solo').textContent = fmt(r.As_solo,2) + ' cm²/m';
+  document.getElementById('as-final').textContent = 'As = ' + fmt(r.As_final,2) + ' cm²/m';
+  document.getElementById('as-final-info').innerHTML =
+    `Domínio 2 com A<sub>s,min</sub> &nbsp;·&nbsp; d = ${fmt(r.d_cm,2)} cm &nbsp;·&nbsp;
+     e = ${r.e_cm} cm &nbsp;·&nbsp; c = ${r.cover_cm} cm`;
+}
+
+// ── Erros ─────────────────────────────────────────────────────────
+function showError(msg) {
+  document.getElementById('error-msg').textContent = msg;
+  document.getElementById('error-box').style.display = 'block';
+  document.getElementById('result-content').style.display = 'none';
+  document.getElementById('placeholder').style.display = 'none';
+}
+function hideError() {
+  document.getElementById('error-box').style.display = 'none';
+}
+
+// ── Atualização de cobrimento ─────────────────────────────────────
+function updateCobMin() {
+  const red = document.getElementById('redutor').checked;
+  const min = getCobMin(state.caa, state.tipoElem, red);
+  const min_cm = min / 10;
+  document.getElementById('cob-min-label').textContent = `[mín. ${fmt(min_cm,1)} cm]`;
+
+  // auto-seta se valor atual estiver abaixo
+  const coverInp = document.getElementById('cover_cm');
+  const cur = parseFloat(coverInp.value);
+  if (cur < min_cm) coverInp.value = min_cm;
+
+  validateCover();
+}
+
+function validateCover() {
+  const red = document.getElementById('redutor').checked;
+  const min = getCobMin(state.caa, state.tipoElem, red);
+  const cur = parseFloat(document.getElementById('cover_cm').value) * 10;
+  const inp = document.getElementById('cover_cm');
+  const msg = document.getElementById('cob-msg');
+  if (cur >= min) {
+    inp.className = 'cob-ok';
+    msg.style.display = 'none';
+  } else {
+    inp.className = 'cob-err';
+    msg.textContent = `❌ Abaixo do mínimo NBR 6118 — CAA ${state.caa} (mín. ${min/10} cm)`;
+    msg.style.display = 'block';
+  }
+}
+
+// ── Eventos ───────────────────────────────────────────────────────
+
+// CAA
+document.querySelectorAll('[data-caa]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.caa = btn.dataset.caa;
+    document.querySelectorAll('[data-caa]').forEach(b => {
+      b.className = 'btn-toggle' + (b.dataset.caa===state.caa?' active-amber':'');
+    });
+    updateCobMin();
+  });
+});
+// Ativa IV por padrão
+document.querySelector('[data-caa="IV"]').classList.add('active-amber');
+document.querySelectorAll('[data-caa]').forEach(b => {
+  if (b.dataset.caa !== 'IV') b.classList.remove('active-amber');
+});
+
+// Tipo elemento
+document.querySelectorAll('[data-elem]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.tipoElem = btn.dataset.elem;
+    document.querySelectorAll('[data-elem]').forEach(b => {
+      b.className = 'btn-toggle' + (b.dataset.elem===state.tipoElem?' active-blue':'');
+    });
+    updateCobMin();
+  });
+});
+
+// Tipo piscina
+document.querySelectorAll('[data-tipo]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    state.tipo = btn.dataset.tipo;
+    document.querySelectorAll('[data-tipo]').forEach(b => {
+      b.className = 'btn-toggle' + (b.dataset.tipo===state.tipo?' active-blue':'');
+    });
+  });
+});
+
+// Ka buttons
+document.querySelectorAll('.ka-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.ka-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('Ka').value = btn.dataset.ka;
+  });
+});
+document.getElementById('Ka').addEventListener('input', () => {
+  const v = parseFloat(document.getElementById('Ka').value);
+  document.querySelectorAll('.ka-btn').forEach(b => {
+    b.classList.toggle('active', Math.abs(parseFloat(b.dataset.ka)-v)<0.001);
+  });
+});
+
+// Redutor
+document.getElementById('redutor').addEventListener('change', updateCobMin);
+
+// Cobrimento
+document.getElementById('cover_cm').addEventListener('input', validateCover);
+
+// Calcular
+document.getElementById('btn-calcular').addEventListener('click', calcular);
+document.addEventListener('keydown', e => { if (e.key==='Enter') calcular(); });
+
+// ── Init ──────────────────────────────────────────────────────────
+updateCobMin();
+</script>
+</body>
+</html>
